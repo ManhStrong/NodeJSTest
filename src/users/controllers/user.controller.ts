@@ -21,8 +21,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfigFile } from '../../helpers/config-file';
 import { plainToInstance } from 'class-transformer';
 import { extname } from 'path';
-import { DetailErrorCode } from '../../shared/errors/detail-error-code';
-import { ErrorCode } from '../../shared/errors/error-code';
 
 @Controller('users')
 export class UserController {
@@ -35,7 +33,7 @@ export class UserController {
    */
   @UseGuards(JwtAuthUserGuard)
   @Get(':id')
-  async getHello(@Param('id') id: number): Promise<UserResponse> {
+  async findOne(@Param('id') id: number): Promise<UserResponse> {
     return await this.userService.getUserById(id);
   }
 
@@ -45,8 +43,36 @@ export class UserController {
    * @returns void
    */
   @Post()
-  async createNewUser(@Body() userReq: CreateUserRequest): Promise<void> {
-    return await this.userService.createUser(userReq);
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: storageConfigFile('avatar'),
+      fileFilter: (req, file, cb) => {
+        const etx = extname(file.originalname);
+        const allowExtArr = ['.jpg', '.png', '.jpeg'];
+        if (!allowExtArr.includes(etx)) {
+          req.fileValidationError = `Wrong type file. Accepted file are:${allowExtArr} `;
+          cb(null, false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async create(
+    @Body() userReq: CreateUserRequest,
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    console.log(file, 'oioiooi');
+    const avatar = file.destination + '/' + file.filename;
+    if (req.fileValidationError) {
+      throw new BadRequestException(req.fileValidationError);
+    }
+    return await this.userService.createUser(
+      plainToInstance(CreateUserRequest, {
+        ...userReq,
+        avatar,
+      }),
+    );
   }
 
   /**
@@ -57,7 +83,7 @@ export class UserController {
    */
   @UseGuards(JwtAuthUserGuard)
   @Patch(':id')
-  async updateProject(
+  async update(
     @Param('id') id: number,
     @Body() updateUserReq: UpdateUserRequest,
   ): Promise<UserResponse> {
@@ -71,7 +97,7 @@ export class UserController {
    */
   @UseGuards(JwtAuthUserGuard)
   @Delete(':id')
-  async deleteProject(@Param('id') id: number): Promise<void> {
+  async delete(@Param('id') id: number): Promise<void> {
     return await this.userService.deleteUser(id);
   }
 
@@ -102,9 +128,7 @@ export class UserController {
   ) {
     const avatar = file.destination + '/' + file.filename;
     if (req.fileValidationError) {
-      throw new BadRequestException(
-        new DetailErrorCode(ErrorCode.INVALID_PARAM, req.fileValidationError),
-      );
+      throw new BadRequestException(req.fileValidationError);
     }
     return await this.userService.updateUser(
       req.user.id,

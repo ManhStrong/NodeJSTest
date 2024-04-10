@@ -1,19 +1,15 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/entities/user.entity';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { CreateUserRequest } from '../dtos/create-user-request.dto';
 import { UpdateUserRequest } from '../dtos/update-user-request.dto';
 import { UserResponse } from '../dtos/user-response.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
-import { DetailErrorCode } from 'src/shared/errors/detail-error-code';
-import { ErrorCode } from 'src/shared/errors/error-code';
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -25,10 +21,7 @@ export class UserService {
    */
   async createUser(createUserRequest: CreateUserRequest): Promise<void> {
     const existingUser = await this.findUser(createUserRequest.userName);
-    if (existingUser)
-      throw new BadRequestException(
-        new DetailErrorCode(ErrorCode.INVALID_PARAM, 'Username already exists'),
-      );
+    if (existingUser) throw new BadRequestException('Username already exists');
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(createUserRequest.password, salt);
     await this.userRepository.save({
@@ -49,7 +42,7 @@ export class UserService {
   ): Promise<UserResponse> {
     const existProject = await this.userRepository.findById(id);
     if (!existProject) {
-      throw new NotFoundException(new DetailErrorCode(ErrorCode.NOT_FOUND));
+      throw new NotFoundException('Not found user');
     }
     const updateReq = {
       ...existProject,

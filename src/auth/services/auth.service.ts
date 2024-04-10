@@ -9,8 +9,6 @@ import { LoginInput } from '../dtos/login-input.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { AccessTokenClaims, LoginOutput } from '../dtos/login-output.dto';
-import { DetailErrorCode } from '../../shared/errors/detail-error-code';
-import { ErrorCode } from '../../shared/errors/error-code';
 import { plainToInstance } from 'class-transformer';
 @Injectable()
 export class AuthService {
@@ -55,9 +53,7 @@ export class AuthService {
   async getUserInfo(userName: string): Promise<AccessTokenClaims> {
     const user = await this.userService.findUser(userName);
     if (!user) {
-      throw new UnauthorizedException(
-        new DetailErrorCode(ErrorCode.UNAUTHORIZED),
-      );
+      throw new UnauthorizedException('Not authorrizedException');
     }
 
     const accessTokenClaims: AccessTokenClaims = plainToInstance(

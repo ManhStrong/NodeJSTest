@@ -6,8 +6,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
-import { DetailErrorCode } from '../../shared/errors/detail-error-code';
-import { ErrorCode } from '../../shared/errors/error-code';
 
 @Injectable()
 export class JwtAuthUserGuard extends AuthGuard('jwt') {
@@ -20,11 +18,10 @@ export class JwtAuthUserGuard extends AuthGuard('jwt') {
   handleRequest(err, user, info) {
     if (err) throw err;
     if (!user) {
-      const error = new DetailErrorCode(ErrorCode.UNAUTHORIZED, info);
-      if (info.name == ErrorCode.TOKEN_EXCEPTION) {
-        throw new RequestTimeoutException(error);
+      if (info.name == 'TokenExpiredError') {
+        throw new RequestTimeoutException(info);
       }
-      throw new UnauthorizedException(error);
+      throw new UnauthorizedException(info);
     }
     return user;
   }

@@ -1,4 +1,5 @@
 import {
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -16,4 +17,8 @@ export class CreateUserRequest {
   })
   @IsString()
   password: string;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string
 }

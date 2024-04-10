@@ -3,13 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User } from './users/entities/user.entity';
+import { User } from './entities/user.entity';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { UserGroupModule } from './user-group/user-group.module';
 import { GroupModule } from './groups/group.module';
-import { UserGroup } from './user-group/entities/user-group.entity';
-import { Group } from './groups/entities/group.entity';
+import { UserGroup } from './entities/user-group.entity';
+import { Group } from './entities/group.entity';
 @Module({
   imports: [
     ConfigModule.forRoot(),
