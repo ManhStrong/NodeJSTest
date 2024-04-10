@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -25,7 +26,9 @@ export class UserService {
   async createUser(createUserRequest: CreateUserRequest): Promise<void> {
     const existingUser = await this.findUser(createUserRequest.userName);
     if (existingUser)
-      throw new HttpException('Username already exists', HttpStatus.CONFLICT);
+      throw new BadRequestException(
+        new DetailErrorCode(ErrorCode.INVALID_PARAM, 'Username already exists'),
+      );
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(createUserRequest.password, salt);
     await this.userRepository.save({
