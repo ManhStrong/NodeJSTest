@@ -1,4 +1,4 @@
-import { Body, Injectable, NotFoundException, Post } from '@nestjs/common';
+import { Injectable, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { UserPermissionRepository } from '../repositories/user-permission.repository';
 import { UserRepository } from '../../users/repositories/user.repository';
 import { CreateUserPermissionInput } from '../dtos/create-user-permission-input.dto';

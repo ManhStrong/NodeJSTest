@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ROLE } from 'src/shares/role.constant';
 
 export class LoginOutput {
   @Expose()
@@ -14,4 +15,7 @@ export class AccessTokenClaims {
 
   @Expose()
   userName: string;
+
+  @Expose()
+  roles: ROLE[];
 }

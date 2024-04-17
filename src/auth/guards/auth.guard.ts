@@ -19,9 +19,9 @@ export class JwtAuthUserGuard extends AuthGuard('jwt') {
     if (err) throw err;
     if (!user) {
       if (info.name == 'TokenExpiredError') {
-        throw new RequestTimeoutException(info);
+        throw new RequestTimeoutException(info.name);
       }
-      throw new UnauthorizedException(info);
+      throw new UnauthorizedException(info.name);
     }
     return user;
   }

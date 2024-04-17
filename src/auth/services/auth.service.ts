@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   BadRequestException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common/exceptions';
 import { UserService } from 'src/users/services/user.service';
@@ -20,7 +21,10 @@ export class AuthService {
 
   async login(loginReq: LoginInput): Promise<LoginOutput> {
     const user = await this.userService.findUser(loginReq.userName);
-    const isMatch = await bcrypt.compare(loginReq.password, user.password);
+    if (!user) {
+      throw new NotFoundException('Not found user');
+    }
+    const isMatch = await bcrypt.compare(loginReq?.password, user.password);
     if (!isMatch) throw new BadRequestException('Invalid username or password');
     const payload = {
       id: user.id,
@@ -55,6 +59,9 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Not authorrizedException');
     }
+
+    const temp = await this.userService.findUserPermission(userName);
+    user['roles'] = temp;
 
     const accessTokenClaims: AccessTokenClaims = plainToInstance(
       AccessTokenClaims,

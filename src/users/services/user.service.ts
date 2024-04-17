@@ -95,4 +95,15 @@ export class UserService {
     });
     return user;
   }
+
+  async findUserPermission(username: string): Promise<any> {
+    const users = await this.userRepository.findOne({
+      where: { userName: username },
+      relations: ['userPermissions', 'userPermissions.permission'],
+    });
+    const permissions = users.userPermissions.map(
+      (userPermission) => userPermission.permission?.permissionName,
+    );
+    return permissions;
+  }
 }

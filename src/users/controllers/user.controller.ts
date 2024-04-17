@@ -21,6 +21,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfigFile } from '../../helpers/config-file';
 import { plainToInstance } from 'class-transformer';
 import { extname } from 'path';
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/auth/dtos/role.decorator';
+import { ROLE } from 'src/shares/role.constant';
 
 @Controller('users')
 export class UserController {
@@ -80,7 +83,8 @@ export class UserController {
    * @param updateUserReq UpdateUserRequest
    * @returns UserResponse
    */
-  @UseGuards(JwtAuthUserGuard)
+  @UseGuards(JwtAuthUserGuard, RolesGuard)
+  @Roles(ROLE.UPDATE)
   @Patch(':id')
   async update(
     @Param('id') id: number,
@@ -95,6 +99,7 @@ export class UserController {
    * @returns void
    */
   @UseGuards(JwtAuthUserGuard)
+  @Roles(ROLE.DELETE)
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return await this.userService.deleteUser(id);
@@ -136,5 +141,4 @@ export class UserController {
       }),
     );
   }
-
 }
