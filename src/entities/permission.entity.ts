@@ -1,5 +1,5 @@
+import { GroupPermission } from './group-permission.entity';
 import { UserPermission } from './user-permission.entity';
-import { UserGroup } from './user-group.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,32 +11,18 @@ import {
 } from 'typeorm';
 
 @Entity({
-  name: 'users',
+  name: 'permissions',
 })
-export class User {
+export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
     length: 255,
-    name: 'user_name',
+    name: 'permission_name',
   })
-  userName: string;
-
-  @Column({
-    name: 'avatar',
-    nullable: true,
-    default: null,
-  })
-  avatar: string;
-
-  @Column({
-    type: 'varchar',
-    length: 255,
-    name: 'password',
-  })
-  password: string;
+  permissionName: string;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -56,9 +42,9 @@ export class User {
   })
   deletedAt?: Date;
 
-  @OneToMany(() => UserGroup, (userGroups) => userGroups.user)
-  userGroups: UserGroup[];
-
   @OneToMany(() => UserPermission, (userPermissions) => userPermissions.user)
   userPermissions: UserPermission[];
+
+  @OneToMany(() => GroupPermission, (groupPermissions) => groupPermissions.group)
+  groupPermissions: GroupPermission[];
 }

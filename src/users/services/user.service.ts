@@ -10,9 +10,15 @@ import { UpdateUserRequest } from '../dtos/update-user-request.dto';
 import { UserResponse } from '../dtos/user-response.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
+import { GroupRepository } from 'src/groups/repositories/group.repository';
+import { UserGroupRepository } from 'src/user-group/repositories/user-group.repository';
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly groupRepository: GroupRepository,
+    private readonly userGroupRepository: UserGroupRepository,
+  ) {}
 
   /**
    *create user

@@ -62,8 +62,7 @@ export class UserController {
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
-    console.log(file, 'oioiooi');
-    const avatar = file.destination + '/' + file.filename;
+    const avatar = file?.destination + '/' + file?.filename;
     if (req.fileValidationError) {
       throw new BadRequestException(req.fileValidationError);
     }
@@ -137,4 +136,5 @@ export class UserController {
       }),
     );
   }
+
 }

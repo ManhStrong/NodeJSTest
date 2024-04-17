@@ -1,3 +1,4 @@
+import { GroupPermission } from './group-permission.entity';
 import { UserGroup } from './user-group.entity';
 import {
   Entity,
@@ -43,4 +44,7 @@ export class Group {
 
   @OneToMany(() => UserGroup, (userGroups) => userGroups.group)
   userGroups: UserGroup[];
+
+  @OneToMany(() => GroupPermission, (groupPermissions) => groupPermissions.group)
+  groupPermissions: GroupPermission[];
 }
