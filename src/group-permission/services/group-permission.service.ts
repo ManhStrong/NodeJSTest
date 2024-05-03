@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GroupPermissionRepository } from '../repositories/group-permission.repository';
 import { CreatePermissionGroupInput } from '../dtos/create-permission-group-input.dto';
-import { GroupRepository } from 'src/groups/repositories/group.repository';
-import { PermissionRepository } from 'src/permissions/repositories/permission.repository';
+import { GroupRepository } from '../../groups/repositories/group.repository';
+import { PermissionRepository } from '../../permissions/repositories/permission.repository';
 import { In } from 'typeorm';
 
 @Injectable()

@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserGroupController } from './controllers/user-group.controller';
 import { UserGroupService } from './services/user-group.service';
 import { UserGroupRepository } from './repositories/user-group.repository';
-import { GroupRepository } from 'src/groups/repositories/group.repository';
-import { UserRepository } from 'src/users/repositories/user.repository';
+import { GroupRepository } from '../groups/repositories/group.repository';
+import { UserRepository } from '../users/repositories/user.repository';
 @Module({
   imports: [
     TypeOrmModule.forFeature([

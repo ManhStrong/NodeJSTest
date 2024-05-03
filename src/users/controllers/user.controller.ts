@@ -21,9 +21,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfigFile } from '../../helpers/config-file';
 import { plainToInstance } from 'class-transformer';
 import { extname } from 'path';
-import { RolesGuard } from 'src/auth/guards/role.guard';
-import { Roles } from 'src/auth/dtos/role.decorator';
-import { ROLE } from 'src/shares/role.constant';
+import { RolesGuard } from '../../auth/guards/role.guard';
+import { Roles } from '../../auth/dtos/role.decorator';
+import { ROLE } from '../../shares/role.constant';
 
 @Controller('users')
 export class UserController {
@@ -36,7 +36,7 @@ export class UserController {
    */
   @UseGuards(JwtAuthUserGuard)
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<UserResponse> {
+  async getUserById(@Param('id') id: number): Promise<UserResponse> {
     return await this.userService.getUserById(id);
   }
 
@@ -60,14 +60,17 @@ export class UserController {
       },
     }),
   )
-  async create(
+  async createUser(
     @Body() userReq: CreateUserRequest,
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
-    const avatar = file?.destination + '/' + file?.filename;
-    if (req.fileValidationError) {
-      throw new BadRequestException(req.fileValidationError);
+    let avatar;
+    if (file) {
+      avatar = file?.destination + '/' + file?.filename;
+      if (req.fileValidationError) {
+        throw new BadRequestException(req.fileValidationError);
+      }
     }
     return await this.userService.createUser(
       plainToInstance(CreateUserRequest, {
@@ -86,7 +89,7 @@ export class UserController {
   @UseGuards(JwtAuthUserGuard, RolesGuard)
   @Roles(ROLE.UPDATE)
   @Patch(':id')
-  async update(
+  async updateUser(
     @Param('id') id: number,
     @Body() updateUserReq: UpdateUserRequest,
   ): Promise<UserResponse> {
@@ -101,7 +104,7 @@ export class UserController {
   @UseGuards(JwtAuthUserGuard)
   @Roles(ROLE.DELETE)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
+  async deleteUser(@Param('id') id: number): Promise<void> {
     return await this.userService.deleteUser(id);
   }
 

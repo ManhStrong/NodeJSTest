@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { ROLE } from 'src/shares/role.constant';
+import { ROLE } from '../../shares/role.constant';
 
 export class LoginOutput {
   @Expose()

@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common/exceptions';
-import { UserService } from 'src/users/services/user.service';
+import { UserService } from '../../users/services/user.service';
 import { LoginInput } from '../dtos/login-input.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
