@@ -120,72 +120,31 @@ describe('UserService', () => {
     });
   });
 
-  // describe('GetAllProject', () => {
-  //   it('should return all projects', async () => {
-  //     const projects: Projects[] = [
-  //       {
-  //         id: 1,
-  //         name: 'Project 1',
-  //         category: 'Category 1',
-  //         projected_spend: 10,
-  //         projected_variance: 10,
-  //         projected_recognised: 10,
-  //         projected_started_at: new Date('2022-01-01'),
-  //         projected_ended_at: new Date('2022-02-01'),
-  //         created_at: undefined,
-  //         updated_at: undefined,
-  //         deleted_at: undefined,
-  //       },
-  //       {
-  //         id: 2,
-  //         name: 'Project 2',
-  //         category: 'Category 2',
-  //         projected_spend: 20,
-  //         projected_variance: 20,
-  //         projected_recognised: 20,
-  //         projected_started_at: new Date('2022-01-01'),
-  //         projected_ended_at: new Date('2022-02-01'),
-  //         created_at: undefined,
-  //         updated_at: undefined,
-  //         deleted_at: undefined,
-  //       },
-  //     ];
+  describe('delete', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
 
-  //     const mockProjects = [projects[0], projects[1]];
+    it('should delete an existing user', async () => {
+      mockUserRepository.findById.mockResolvedValue(user);
+      mockUserRepository.delete.mockResolvedValue({ affected: 1 });
 
-  //     mockUserRepository.find.mockResolvedValue(mockProjects);
+      await userService.deleteUser(user.id);
+      expect(mockUserRepository.findById).toHaveBeenCalledWith(user.id);
+      expect(mockUserRepository.delete).toHaveBeenCalledWith(user.id);
+    });
 
-  //     const result = await userService.getAllProject();
-  //     expect(result).toHaveLength(mockProjects.length);
-  //     expect(mockUserRepository.find).toHaveBeenCalled();
-  //   });
-  // });
+    it('should throw an error if user id is not found', async () => {
+      const userId = 999;
+      mockUserRepository.findById.mockRejectedValue(
+        new Error('User not found'),
+      );
 
-  // describe('delete', () => {
-  //   beforeEach(() => {
-  //     jest.clearAllMocks();
-  //   });
-
-  //   it('should delete an existing project', async () => {
-  //     mockUserRepository.findById.mockResolvedValue(user);
-  //     mockUserRepository.delete.mockResolvedValue({ affected: 1 });
-
-  //     await userService.deleteProjectById(user.id);
-  //     expect(mockUserRepository.findById).toHaveBeenCalledWith(user.id);
-  //     expect(mockUserRepository.delete).toHaveBeenCalledWith(user.id);
-  //   });
-
-  //   it('should throw an error if project id is not found', async () => {
-  //     const projectId = 999;
-  //     mockUserRepository.findById.mockRejectedValue(
-  //       new Error('Project not found'),
-  //     );
-
-  //     await expect(userService.deleteProjectById(projectId)).rejects.toThrow(
-  //       new Error('Project not found'),
-  //     );
-  //     expect(mockUserRepository.findById).toHaveBeenCalledWith(projectId);
-  //     expect(mockUserRepository.delete).not.toHaveBeenCalled();
-  //   });
-  // });
+      await expect(userService.deleteUser(userId)).rejects.toThrow(
+        new Error('User not found'),
+      );
+      expect(mockUserRepository.findById).toHaveBeenCalledWith(userId);
+      expect(mockUserRepository.delete).not.toHaveBeenCalled();
+    });
+  });
 });
