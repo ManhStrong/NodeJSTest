@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
   const mockPermissionService = {
     createPermission: jest.fn(),
   };
-  const mockUsergroupService = {
+  const mockUserGroupService = {
     createUserGroup: jest.fn(),
   };
   const mockUserPermissionService = {
@@ -45,7 +45,7 @@ describe('AppController (e2e)', () => {
       .overrideProvider(PermissionService)
       .useValue(mockPermissionService)
       .overrideProvider(UserGroupService)
-      .useValue(mockUsergroupService)
+      .useValue(mockUserGroupService)
       .overrideProvider(UserPermissionService)
       .useValue(mockUserPermissionService)
       .overrideGuard(JwtAuthUserGuard)
@@ -170,14 +170,14 @@ describe('AppController (e2e)', () => {
   });
   describe('create user group', () => {
     it('should create a new user group', async () => {
-      mockUsergroupService.createUserGroup.mockResolvedValue(mockUserGroup);
+      mockUserGroupService.createUserGroup.mockResolvedValue(mockUserGroup);
       await request(app.getHttpServer())
         .post('/user-groups')
         .send(userGroup)
         .then((response) => {
           expect(response.body).toEqual(mockUserGroup);
         });
-      expect(mockUsergroupService.createUserGroup).toHaveBeenCalledWith(
+      expect(mockUserGroupService.createUserGroup).toHaveBeenCalledWith(
         userGroup,
       );
     });

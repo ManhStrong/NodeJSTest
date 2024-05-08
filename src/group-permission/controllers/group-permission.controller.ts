@@ -7,14 +7,7 @@ export class GroupPermissionController {
   constructor(
     private readonly groupPermissionService: GroupPermissionService,
   ) {}
-  @Post()
-  async createPermissionGroup(
-    @Body() createPermissionGroupInput: CreatePermissionGroupInput,
-  ): Promise<void> {
-    return await this.groupPermissionService.createPermissionGroup(
-      createPermissionGroupInput,
-    );
-  }
+  
 
   @Get()
   async getAllGroupPermission(): Promise<any> {

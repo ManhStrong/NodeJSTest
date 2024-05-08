@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class GroupCreateInput{
   @IsString()
   @IsNotEmpty()
   groupName: string;
+
+  @IsArray()
+  @IsOptional()
+  permissions: number[];
 }

@@ -1,36 +1,159 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
 export class CreateTable1712888925798 implements MigrationInterface {
-    name = 'CreateTable1712888925798'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`groups\` (\`id\` int NOT NULL AUTO_INCREMENT, \`group_name\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`user-groups\` (\`id\` int NOT NULL AUTO_INCREMENT, \`user_id\` int NOT NULL, \`group_id\` int NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`user_name\` varchar(255) NOT NULL, \`avatar\` varchar(255) NULL, \`password\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`user-permissions\` (\`id\` int NOT NULL AUTO_INCREMENT, \`user_id\` int NOT NULL, \`permission_id\` int NOT NULL, \`is_active\` tinyint NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`permissions\` (\`id\` int NOT NULL AUTO_INCREMENT, \`permission_name\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`group-permissions\` (\`id\` int NOT NULL AUTO_INCREMENT, \`group_id\` int NOT NULL, \`permission_id\` int NOT NULL, \`is_active\` tinyint NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`ALTER TABLE \`user-groups\` ADD CONSTRAINT \`FK_5a551586a2b33ad8a5ea1fa513d\` FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`user-groups\` ADD CONSTRAINT \`FK_f23d274a88d7506f2f76810085b\` FOREIGN KEY (\`group_id\`) REFERENCES \`groups\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`user-permissions\` ADD CONSTRAINT \`FK_dd4945ff7a60291eeddfc3fd74b\` FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`user-permissions\` ADD CONSTRAINT \`FK_f6a9e734de8612cbf834bdcf7a9\` FOREIGN KEY (\`permission_id\`) REFERENCES \`permissions\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`group-permissions\` ADD CONSTRAINT \`FK_e8fea665fe4ab6dec4b50ab5462\` FOREIGN KEY (\`group_id\`) REFERENCES \`groups\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`group-permissions\` ADD CONSTRAINT \`FK_4a045e0731051a752b735ecd41e\` FOREIGN KEY (\`permission_id\`) REFERENCES \`permissions\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        // Create 'groups' table
+        await queryRunner.createTable(new Table({
+            name: 'groups',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'group_name', type: 'varchar' },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Create 'user-groups' table
+        await queryRunner.createTable(new Table({
+            name: 'user-groups',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'user_id', type: 'int' },
+                { name: 'group_id', type: 'int' },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Create 'users' table
+        await queryRunner.createTable(new Table({
+            name: 'users',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'user_name', type: 'varchar' },
+                { name: 'avatar', type: 'varchar', isNullable: true },
+                { name: 'password', type: 'varchar' },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Create 'user-permissions' table
+        await queryRunner.createTable(new Table({
+            name: 'user-permissions',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'user_id', type: 'int' },
+                { name: 'permission_id', type: 'int' },
+                { name: 'is_active', type: 'tinyint', isNullable: true },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Create 'permissions' table
+        await queryRunner.createTable(new Table({
+            name: 'permissions',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'permission_name', type: 'varchar' },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Create 'group-permissions' table
+        await queryRunner.createTable(new Table({
+            name: 'group-permissions',
+            columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
+                { name: 'group_id', type: 'int' },
+                { name: 'permission_id', type: 'int' },
+                { name: 'is_active', type: 'tinyint', isNullable: true },
+                { name: 'created_at', type: 'datetime', default: 'now()' },
+                { name: 'updated_at', type: 'datetime', default: 'now()', },
+                { name: 'deleted_at', type: 'datetime', isNullable: true }
+            ]
+        }), true);
+
+        // Add foreign key constraints
+        await queryRunner.createForeignKey('user-groups', new TableForeignKey({
+            columnNames: ['user_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'users',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_5a551586a2b33ad8a5ea1fa513d'
+        }));
+
+        await queryRunner.createForeignKey('user-groups', new TableForeignKey({
+            columnNames: ['group_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'groups',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_f23d274a88d7506f2f76810085b'
+        }));
+
+        await queryRunner.createForeignKey('user-permissions', new TableForeignKey({
+            columnNames: ['user_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'users',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_dd4945ff7a60291eeddfc3fd74b'
+        }));
+
+        await queryRunner.createForeignKey('user-permissions', new TableForeignKey({
+            columnNames: ['permission_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'permissions',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_f6a9e734de8612cbf834bdcf7a9'
+        }));
+
+        await queryRunner.createForeignKey('group-permissions', new TableForeignKey({
+            columnNames: ['group_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'groups',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_e8fea665fe4ab6dec4b50ab5462'
+        }));
+
+        await queryRunner.createForeignKey('group-permissions', new TableForeignKey({
+            columnNames: ['permission_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'permissions',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION',
+            name: 'FK_4a045e0731051a752b735ecd41e'
+        }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE \`group-permissions\` DROP FOREIGN KEY \`FK_4a045e0731051a752b735ecd41e\``);
-        await queryRunner.query(`ALTER TABLE \`group-permissions\` DROP FOREIGN KEY \`FK_e8fea665fe4ab6dec4b50ab5462\``);
-        await queryRunner.query(`ALTER TABLE \`user-permissions\` DROP FOREIGN KEY \`FK_f6a9e734de8612cbf834bdcf7a9\``);
-        await queryRunner.query(`ALTER TABLE \`user-permissions\` DROP FOREIGN KEY \`FK_dd4945ff7a60291eeddfc3fd74b\``);
-        await queryRunner.query(`ALTER TABLE \`user-groups\` DROP FOREIGN KEY \`FK_f23d274a88d7506f2f76810085b\``);
-        await queryRunner.query(`ALTER TABLE \`user-groups\` DROP FOREIGN KEY \`FK_5a551586a2b33ad8a5ea1fa513d\``);
-        await queryRunner.query(`DROP TABLE \`group-permissions\``);
-        await queryRunner.query(`DROP TABLE \`permissions\``);
-        await queryRunner.query(`DROP TABLE \`user-permissions\``);
-        await queryRunner.query(`DROP TABLE \`users\``);
-        await queryRunner.query(`DROP TABLE \`user-groups\``);
-        await queryRunner.query(`DROP TABLE \`groups\``);
+        // Drop foreign key constraints
+        await queryRunner.dropForeignKey('group-permissions', 'FK_4a045e0731051a752b735ecd41e');
+        await queryRunner.dropForeignKey('group-permissions', 'FK_e8fea665fe4ab6dec4b50ab5462');
+        await queryRunner.dropForeignKey('user-permissions', 'FK_f6a9e734de8612cbf834bdcf7a9');
+        await queryRunner.dropForeignKey('user-permissions', 'FK_dd4945ff7a60291eeddfc3fd74b');
+        await queryRunner.dropForeignKey('user-groups', 'FK_f23d274a88d7506f2f76810085b');
+        await queryRunner.dropForeignKey('user-groups', 'FK_5a551586a2b33ad8a5ea1fa513d');
+
+        // Drop tables
+        await queryRunner.dropTable('group-permissions');
+        await queryRunner.dropTable('permissions');
+        await queryRunner.dropTable('user-permissions');
+        await queryRunner.dropTable('users');
+        await queryRunner.dropTable('user-groups');
+        await queryRunner.dropTable('groups');
     }
 
 }

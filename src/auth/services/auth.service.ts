@@ -57,11 +57,11 @@ export class AuthService {
   async getUserInfo(userName: string): Promise<AccessTokenClaims> {
     const user = await this.userService.findUser(userName);
     if (!user) {
-      throw new UnauthorizedException('Not authorrizedException');
+      throw new UnauthorizedException('Not authorizedException');
     }
 
-    const temp = await this.userService.findUserPermission(userName);
-    user['roles'] = temp;
+    const permissions = await this.userService.findUserPermission(userName);
+    user['roles'] = permissions;
 
     const accessTokenClaims: AccessTokenClaims = plainToInstance(
       AccessTokenClaims,

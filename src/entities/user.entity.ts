@@ -8,7 +8,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Permission } from './permission.entity';
 
 @Entity({
   name: 'users',

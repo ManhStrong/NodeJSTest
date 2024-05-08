@@ -45,6 +45,9 @@ export class Group {
   @OneToMany(() => UserGroup, (userGroups) => userGroups.group)
   userGroups: UserGroup[];
 
-  @OneToMany(() => GroupPermission, (groupPermissions) => groupPermissions.group)
+  @OneToMany(
+    () => GroupPermission,
+    (groupPermissions) => groupPermissions.group
+  )
   groupPermissions: GroupPermission[];
 }

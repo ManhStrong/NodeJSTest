@@ -6,9 +6,5 @@ import { JwtAuthUserGuard } from '../../auth/guards/auth.guard';
 export class UserGroupController {
   constructor(private readonly userGroupService: UserGroupService) {}
 
-  @UseGuards(JwtAuthUserGuard)
-  @Post()
-  async createUserGroup(@Body() userGroupCreateInput: UserGroupCreateInput ):Promise<void> {
-    return await this.userGroupService.createUserGroup(userGroupCreateInput);
-  }
+  
 }

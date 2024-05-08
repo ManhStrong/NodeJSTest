@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -10,7 +11,11 @@ export class UpdateUserRequest {
   @IsOptional()
   userName?: string;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  avatar?: string
+  permissions: number[];
+
+  @IsOptional()
+  @IsArray()
+  groups: number[];
 }

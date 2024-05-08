@@ -9,23 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserPermissionService } from '../services/user-permission.service';
-import { CreateUserPermissionInput } from '../dtos/create-user-permission-input.dto';
 import { JwtAuthUserGuard } from '../../auth/guards/auth.guard';
 import { Response } from 'express';
 
 @Controller('user-permissions')
-export class UserPremissionController {
+export class UserPermissionController {
   constructor(private readonly userPermissionService: UserPermissionService) {}
-
-  @UseGuards(JwtAuthUserGuard)
-  @Post()
-  async createUserPermission(
-    @Body() createUserPermissionInput: CreateUserPermissionInput,
-  ): Promise<void> {
-    return await this.userPermissionService.createUserPermission(
-      createUserPermissionInput,
-    );
-  }
 
   @UseGuards(JwtAuthUserGuard)
   @Get()

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsOptional,
   IsString,
   MaxLength,
@@ -13,12 +14,16 @@ export class CreateUserRequest {
     message: 'Password must be at least 8 characters',
   })
   @MaxLength(20, {
-    message: 'Password up to 20 charaters',
+    message: 'Password up to 20 characters',
   })
   @IsString()
   password: string;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  avatar?: string
+  permissions: number[];
+
+  @IsOptional()
+  @IsArray()
+  groups: number[];
 }

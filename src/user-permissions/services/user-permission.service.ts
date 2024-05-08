@@ -1,11 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { UserPermissionRepository } from '../repositories/user-permission.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../../users/repositories/user.repository';
-import { CreateUserPermissionInput } from '../dtos/create-user-permission-input.dto';
-import { In } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { PermissionsResponse } from '../dtos/permission-response.dto';
 import { Response } from 'express';
@@ -13,38 +7,7 @@ import { createObjectCsvWriter } from 'csv-writer';
 
 @Injectable()
 export class UserPermissionService {
-  constructor(
-    private readonly userPermissionRepository: UserPermissionRepository,
-    private readonly userRepository: UserRepository,
-  ) {}
-
-  async createUserPermission(
-    createUserPermissionInput: CreateUserPermissionInput,
-  ): Promise<void> {
-    const { userId, permissions } = createUserPermissionInput;
-    let group = await this.userRepository.findOne({ where: { id: userId } });
-
-    if (!group) {
-      throw new NotFoundException(`Group with ID ${userId} not found`);
-    }
-
-    const listPermissionFound = await this.userRepository.find({
-      where: {
-        id: In(permissions.map((permission) => permission.permissionId)),
-      },
-    });
-    if (permissions.length !== listPermissionFound.length) {
-      throw new NotFoundException('Users not found');
-    }
-
-    const userPermission = permissions.map((permission) => {
-      return {
-        userId: userId,
-        permissionId: permission.permissionId,
-      };
-    });
-    await this.userPermissionRepository.insert(userPermission);
-  }
+  constructor(private readonly userRepository: UserRepository) {}
 
   async getAllUserPermission(): Promise<any> {
     const users = await this.userRepository.find({
@@ -96,10 +59,7 @@ export class UserPermissionService {
     return userPermissions;
   }
 
-  async exportUserPermission(
-    res: Response,
-    userId: number,
-  ): Promise<void> {
+  async exportUserPermission(res: Response, userId: number): Promise<void> {
     const permissions = await this.getPermissionByUserId(userId);
     const csvWriter = createObjectCsvWriter({
       path: `permission${userId}.csv`,

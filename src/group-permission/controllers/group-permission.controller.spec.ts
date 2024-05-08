@@ -40,23 +40,7 @@ describe('GroupPermissionController', () => {
     );
   });
 
-  describe('createGroupPermission', () => {
-    it('should create a new group permission', async () => {
-      const createGroupPermissionSpy = jest
-        .spyOn(groupPermissionService, 'createPermissionGroup')
-        .mockResolvedValue(mockGroupPermission);
-
-      const result = await groupPermissionController.createPermissionGroup(
-        mockGroupPermission,
-      );
-
-      expect(result).toEqual(mockGroupPermission);
-      expect(createGroupPermissionSpy).toHaveBeenCalledWith(
-        mockGroupPermission,
-      );
-    });
-  });
-
+  
   describe('getAllGroupPermission', () => {
     it('should get all group permission', async () => {
       const mockGroupPermissions = [

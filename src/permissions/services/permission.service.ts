@@ -10,10 +10,10 @@ export class PermissionService {
   async createPermission(
     permissionCreateInput: PermissionCreateInput,
   ): Promise<PermissionResponse> {
-    const groupExist = await this.permissionRepository.findOne({
-      where: { groupName: permissionCreateInput.permissionName },
+    const permissionExist = await this.permissionRepository.findOne({
+      where: { permissionName: permissionCreateInput.permissionName },
     });
-    if (groupExist) throw new BadRequestException('Group is exist');
+    if (permissionExist) throw new BadRequestException('Group is exist');
     const entity = await this.permissionRepository.create(
       permissionCreateInput,
     );
